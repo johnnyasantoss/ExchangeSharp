@@ -1,10 +1,27 @@
 trigger:
+  batch: false
+  tags:
+    include:
+      - '*'
+
+schedules:
+- cron: "0 0 * */1 *"
+  displayName: Monthly release
+  branches:
+    include:
     - master
 
 strategy:
     matrix:
+        macos:
+            imageName: macOS-latest
+            rid: osx-x64
+        linux:
+            imageName: ubuntu-18.04
+            rid: linux-x64
         windows:
-            imageName: 'vs2017-win2016'
+            imageName: windows-2019
+            rid: win-x64
 
 pool:
     vmImage: $(imageName)
@@ -17,3 +34,8 @@ steps:
       displayName: 'Build All'
     - script: dotnet test tests/ExchangeSharpTests/ExchangeSharpTests.csproj --configuration $(buildConfiguration)
       displayName: 'Test'
+    - script: dotnet publish --force -r "${rid}" -f netcoreapp30 -o "${PWD}/dist/${rid}/" -c $(buildConfiguration) --nologo --self-contained -p:PublishTrimmed=True -p:PublishReadyToRun=True -p:PublishSingleFile=True -p:PublishReadyToRunShowWarnings=True -p:ShowLinkerSizeComparison=True -p:LinkerTrimNativeDeps=True
+      displayName: "Publish console executable"
+      timeoutInMinutes: 5
+      workingDirectory: ./src/ExchangeSharpConsole/
+      condition: or(eq(variables['Build.Reason'], 'Schedule'), startsWith(variables['Build.SourceBranch'], 'refs/tags'))
