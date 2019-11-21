@@ -49,7 +49,7 @@ jobs:
         inputs:
           command: 'build'
           configuration: $(BuildConfiguration)
-          projects: 'src/ExchangeSharpConsole/ExchangeSharpConsole.csproj'
+          projects: 'ExchangeSharpConsole/ExchangeSharpConsole.csproj'
       - task: DotNetCoreCLI@2
         displayName: 'Tests'
         inputs:
@@ -99,7 +99,7 @@ jobs:
           #versioningScheme: 'off' # Options: off, byPrereleaseNumber, byEnvVar, byBuildNumber
           #versionEnvVar: # Required when versioningScheme == ByEnvVar
           publishWebProjects: false
-          workingDirectory: ./src/ExchangeSharpConsole/
+          workingDirectory: ./ExchangeSharpConsole/
       - bash: |
           set -x
           rm -rfv $(Build.ArtifactStagingDirectory)/$(rid)/*.pdb
